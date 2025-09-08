@@ -1,0 +1,55 @@
+import java.math.BigInteger;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+class PolynomialConstantTerm {
+
+    public static BigInteger toDecimal(String value, int base) {
+        return new BigInteger(value.toLowerCase(), base);
+    }
+
+    public static BigInteger computeConstant(Map<String, String[]> roots, int k) {
+        BigInteger result = BigInteger.ONE;
+        int count = 0;
+
+        for (Map.Entry<String, String[]> entry : roots.entrySet()) {
+            if (count >= k) break;
+            int base = Integer.parseInt(entry.getValue()[0]);
+            String value = entry.getValue()[1];
+            BigInteger root = toDecimal(value, base);
+            result = result.multiply(root);
+            count++;
+        }
+
+        if (k % 2 != 0) result = result.negate();
+        return result;
+    }
+
+    public static void main(String[] args) {
+        // Test Case 1
+        int k1 = 3;
+        Map<String, String[]> roots1 = new LinkedHashMap<>();
+        roots1.put("1", new String[]{"10", "4"});
+        roots1.put("2", new String[]{"2", "111"});
+        roots1.put("3", new String[]{"10", "12"});
+        roots1.put("6", new String[]{"4", "213"}); // Extra, ignored
+
+        System.out.println(computeConstant(roots1, k1));
+
+        // Test Case 2
+        int k2 = 7;
+        Map<String, String[]> roots2 = new LinkedHashMap<>();
+        roots2.put("1", new String[]{"6", "13444211440455345511"});
+        roots2.put("2", new String[]{"15", "aed7015a346d635"});
+        roots2.put("3", new String[]{"15", "6aeeb69631c227c"});
+        roots2.put("4", new String[]{"16", "e1b5e05623d881f"});
+        roots2.put("5", new String[]{"8", "316034514573652620673"});
+        roots2.put("6", new String[]{"3", "2122212201122002221120200210011020220200"});
+        roots2.put("7", new String[]{"3", "20120221122211000100210021102001201112121"});
+        roots2.put("8", new String[]{"6", "20220554335330240002224253"});
+        roots2.put("9", new String[]{"12", "45153788322a1255483"});
+        roots2.put("10", new String[]{"7", "1101613130313526312514143"});
+
+        System.out.println(computeConstant(roots2, k2));
+    }
+}
