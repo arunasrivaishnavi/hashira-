@@ -1,0 +1,75 @@
+import java.math.BigInteger;
+
+class TestCase2_NoJSON {
+
+    public static double[] solveSystem(double[][] matrix, double[] y) {
+        int n = y.length;
+        for (int i = 0; i < n; i++) {
+            double diag = matrix[i][i];
+            for (int j = 0; j < n; j++) matrix[i][j] /= diag;
+            y[i] /= diag;
+
+            for (int k = 0; k < n; k++) {
+                if (k != i) {
+                    double factor = matrix[k][i];
+                    for (int j = 0; j < n; j++) matrix[k][j] -= factor * matrix[i][j];
+                    y[k] -= factor * y[i];
+                }
+            }
+        }
+        return y;
+    }
+
+    public static void main(String[] args) {
+        // Hardcoded Test Case 2
+        int k = 7;  // degree + 1
+        int[] xVals = {1, 2, 3, 4, 5, 6, 7};
+        String[] bases = {"6", "15", "15", "16", "8", "3", "3"};
+        String[] values = {
+            "13444211440455345511",
+            "aed7015a346d635",
+            "6aeeb69631c227c",
+            "e1b5e05623d881f",
+            "316034514573652620673",
+            "2122212201122002221120200210011020220200",
+            "20120221122211000100210021102001201112121"
+        };
+
+        BigInteger[] yVals = new BigInteger[k];
+        for (int i = 0; i < k; i++) {
+            int base = Integer.parseInt(bases[i]);
+            yVals[i] = new BigInteger(values[i], base);
+        }
+
+        // Build Vandermonde system
+        double[][] matrix = new double[k][k];
+        double[] yArr = new double[k];
+        for (int i = 0; i < k; i++) {
+            int x = xVals[i];
+            for (int j = 0; j < k; j++) {
+                matrix[i][j] = Math.pow(x, j);
+            }
+            yArr[i] = yVals[i].doubleValue();
+        }
+
+        double[] coeffs = solveSystem(matrix, yArr);
+
+        // Print results
+        System.out.println("Decoded (x, y) pairs:");
+        for (int i = 0; i < k; i++) {
+            System.out.println("(" + xVals[i] + ", " + yVals[i] + ")");
+        }
+
+        System.out.println("\nPolynomial coefficients:");
+        for (int i = 0; i < coeffs.length; i++) {
+            System.out.printf("a%d = %.6f%n", i, coeffs[i]);
+        }
+
+        System.out.print("\nPolynomial: ");
+        for (int i = 0; i < coeffs.length; i++) {
+            System.out.printf("%.2f*x^%d ", coeffs[i], i);
+            if (i < coeffs.length - 1) System.out.print("+ ");
+        }
+        System.out.println();
+    }
+}
