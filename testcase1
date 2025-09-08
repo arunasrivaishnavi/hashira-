@@ -1,0 +1,68 @@
+import java.math.BigInteger;
+
+ class TestCase1_NoJSON {
+
+    // Solve linear system using Gaussian elimination
+    public static double[] solveSystem(double[][] matrix, double[] y) {
+        int n = y.length;
+        for (int i = 0; i < n; i++) {
+            double diag = matrix[i][i];
+            for (int j = 0; j < n; j++) matrix[i][j] /= diag;
+            y[i] /= diag;
+
+            for (int k = 0; k < n; k++) {
+                if (k != i) {
+                    double factor = matrix[k][i];
+                    for (int j = 0; j < n; j++) matrix[k][j] -= factor * matrix[i][j];
+                    y[k] -= factor * y[i];
+                }
+            }
+        }
+        return y;
+    }
+
+    public static void main(String[] args) {
+        // Hardcoded Test Case 1
+        int k = 3;  // given
+        int[] xVals = {1, 2, 3};  // take first 3 roots
+        String[] bases = {"10", "2", "10"};
+        String[] values = {"4", "111", "12"};
+
+        BigInteger[] yVals = new BigInteger[k];
+        for (int i = 0; i < k; i++) {
+            int base = Integer.parseInt(bases[i]);
+            yVals[i] = new BigInteger(values[i], base);
+        }
+
+        // Build system of equations
+        double[][] matrix = new double[k][k];
+        double[] yArr = new double[k];
+        for (int i = 0; i < k; i++) {
+            int x = xVals[i];
+            for (int j = 0; j < k; j++) {
+                matrix[i][j] = Math.pow(x, j);
+            }
+            yArr[i] = yVals[i].doubleValue();
+        }
+
+        double[] coeffs = solveSystem(matrix, yArr);
+
+        // Print results
+        System.out.println("Decoded (x, y) pairs:");
+        for (int i = 0; i < k; i++) {
+            System.out.println("(" + xVals[i] + ", " + yVals[i] + ")");
+        }
+
+        System.out.println("\nPolynomial coefficients:");
+        for (int i = 0; i < coeffs.length; i++) {
+            System.out.printf("a%d = %.6f%n", i, coeffs[i]);
+        }
+
+        System.out.print("\nPolynomial: ");
+        for (int i = 0; i < coeffs.length; i++) {
+            System.out.printf("%.2f*x^%d ", coeffs[i], i);
+            if (i < coeffs.length - 1) System.out.print("+ ");
+        }
+        System.out.println();
+    }
+}
